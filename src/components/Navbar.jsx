@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Leaf, Menu, Phone, X } from 'lucide-react'
+import { Leaf, Menu, Phone, ShoppingCart, X } from 'lucide-react'
 import { company, navLinks, whatsappLink } from '../data/content'
+import { useCart } from '../marketplace/context/CartContext'
+import { formatCurrency } from '../utils'
 import { useReducedMotion } from '../hooks/useAnimations'
 import { cn } from '../utils'
 import MagneticButton from './MagneticButton'
@@ -13,8 +14,9 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [open, setOpen] = useState(false)
-  const location = useLocation()
+  const pathname = window.location.pathname
   const reducedMotion = useReducedMotion()
+  const { totalItems, total, currency, openCart } = useCart()
 
   useEffect(() => {
     let last = window.scrollY
@@ -31,7 +33,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setOpen(false)
-  }, [location.pathname])
+  }, [pathname])
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -42,6 +44,25 @@ export default function Navbar() {
 
   const toggle = useCallback(() => setOpen((value) => !value), [])
 
+  const NavLink = ({ to, children, className: classNameProp }) => {
+    const isActive = pathname === to || pathname.startsWith(to + '/')
+    return (
+      <a
+        href={to}
+        className={cn(isActive ? 'active' : '', classNameProp)}
+        onClick={(e) => {
+          if (to.startsWith('/marketplace')) {
+            e.preventDefault()
+            window.location.pathname = to
+            window.dispatchEvent(new PopStateEvent('popstate'))
+          }
+        }}
+      >
+        {children}
+      </a>
+    )
+  }
+
   return (
     <>
       <motion.header
@@ -50,28 +71,39 @@ export default function Navbar() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
       >
-        <Link to="/" className="brand" aria-label={`${company.name} home`}>
+        <a href="/" className="brand" aria-label={`${company.name} home`}>
           <span className="brand-mark" aria-hidden="true">
             <Leaf size={20} />
           </span>
           <span>
             LEEMA <b>TECH</b>
           </span>
-        </Link>
+        </a>
 
         <nav className="desktop-nav" aria-label="Primary">
           {navLinks.map((link) => (
-            <NavLink key={link.to} to={link.to} className={({ isActive }) => (isActive ? 'active' : '')}>
+            <NavLink key={link.to} to={link.to}>
               {link.label}
             </NavLink>
           ))}
         </nav>
 
         <div className="nav-cta">
-          <a className="nav-phone" href={company.phoneHref} aria-label={`Call ${company.name}`}>
+          <a className="nav-phone" href={company.phoneHref} aria-label={`Call ${company.phone}`}>
             <Phone size={15} aria-hidden="true" />
             <span>{company.phone}</span>
           </a>
+          <button
+            type="button"
+            className="cart-fab-nav glass-base"
+            style={{ '--glass-blur': '18px' }}
+            onClick={openCart}
+            aria-label={`Open cart — ${totalItems} items, ${formatCurrency(total, currency)}`}
+          >
+            <ShoppingCart size={16} aria-hidden="true" />
+            <span className="cart-fab-nav-count">{totalItems}</span>
+            <span className="cart-fab-nav-total">{formatCurrency(total, currency)}</span>
+          </button>
           <MagneticButton to="/contact" variant="primary" size="sm" magnetic={!reducedMotion}>
             Get in Touch
           </MagneticButton>
@@ -107,7 +139,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 + index * 0.05, ease: EASE }}
                 >
-                  <NavLink to={link.to} className={({ isActive }) => (isActive ? 'active' : '')}>
+                  <NavLink to={link.to}>
                     <span>{link.label}</span>
                     <span className="mobile-nav-index" aria-hidden="true">
                       0{index + 1}
@@ -121,6 +153,19 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.36, ease: EASE }}
               >
+                <button
+                  type="button"
+                  className="cart-fab-nav glass-base mobile-cart-fab"
+                  style={{ '--glass-blur': '18px' }}
+                  onClick={() => {
+                    setOpen(false)
+                    openCart()
+                  }}
+                  aria-label={`Open cart — ${totalItems} items, ${formatCurrency(total, currency)}`}
+                >
+                  <ShoppingCart size={16} aria-hidden="true" />
+                  <span>Cart · {totalItems} items · {formatCurrency(total, currency)}</span>
+                </button>
                 <MagneticButton to="/contact" variant="primary" magnetic={false}>
                   Get in Touch
                 </MagneticButton>

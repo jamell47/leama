@@ -466,5 +466,7 @@ export const navLinks = [
   { label: 'Services', to: '/services' },
   { label: 'Focus Areas', to: '/focus-areas' },
   { label: 'Why Us', to: '/why-us' },
+  { label: 'Marketplace', to: '/marketplace', icon: 'ShoppingCart' },
+  { label: 'Farmers', to: '/farmers' },
   { label: 'Contact', to: '/contact' },
 ]

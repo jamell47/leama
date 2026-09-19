@@ -226,6 +226,7 @@ ol {
   position: relative;
   background: transparent;
   padding: var(--section-pad) 0;
+  scroll-margin-top: calc(var(--nav-height) + 28px);
 }
 
 .section-pad {
@@ -764,6 +765,7 @@ strong {
   position: fixed;
   top: clamp(12px, 1.8vw, 24px);
   left: 50%;
+  right: auto;
   z-index: 900;
   display: flex;
   align-items: center;
@@ -777,7 +779,7 @@ strong {
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
-  transform: translateX(-50%);
+  margin-left: calc(-1 * min((100% - 32px) / 2, 620px));
   transition:
     background var(--transition-normal),
     box-shadow var(--transition-normal),
@@ -809,7 +811,8 @@ strong {
 
 .navbar.is-hidden {
   opacity: 0;
-  transform: translateX(-50%) translateY(-150%);
+  pointer-events: none;
+  top: -150px;
 }
 
 .brand {
@@ -842,7 +845,10 @@ strong {
 
 .desktop-nav {
   display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
   align-items: center;
+  justify-content: center;
   gap: 2px;
 }
 
@@ -886,8 +892,33 @@ strong {
 }
 
 .nav-cta {
-  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 0;
   font-size: 13.5px;
+}
+
+.nav-phone {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  padding: 9px 8px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.nav-phone svg,
+.mobile-nav-phone svg {
+  flex: 0 0 auto;
+  color: var(--green-light);
+}
+
+.nav-phone:hover {
+  color: var(--ink-white);
 }
 
 .menu-button {
@@ -943,6 +974,32 @@ strong {
 .mobile-nav-cta {
   margin-top: 6px;
   justify-content: center;
+}
+
+.mobile-nav-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 899;
+  padding: 0 10px;
+  background: rgba(1, 8, 4, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.mobile-nav-phone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border: 1px solid rgba(141, 255, 112, 0.24);
+  border-radius: 14px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.mobile-nav-phone:hover {
+  color: var(--ink-white);
+  background: rgba(57, 255, 106, 0.1);
 }
 
 /* ---------------------------------------------------------
@@ -3854,6 +3911,13 @@ strong {
 }
 
 @media (max-width: 1100px) {
+  .navbar {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    margin-left: 0;
+  }
+
   :root {
     --glass-blur: 20px;
     --section-pad: clamp(60px, 7vw, 110px);
@@ -4002,14 +4066,26 @@ strong {
   }
 }
 
-@media (max-width: 900px) {
-  .desktop-nav,
+@media (max-width: 1100px) {
+  .desktop-nav {
+    display: none;
+  }
+
   .nav-cta {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-cta > .nav-phone,
+  .nav-cta > .cart-fab-nav,
+  .nav-cta > .btn-shell {
     display: none;
   }
 
   .menu-button {
     display: grid;
+    flex: 0 0 auto;
+    cursor: pointer;
   }
 
   .marketplace-head,
@@ -4043,6 +4119,44 @@ strong {
     min-height: 360px;
   }
 }
+
+@media (min-width: 1101px) and (max-width: 1180px) {
+  .navbar {
+    gap: 8px;
+    padding-left: 14px;
+  }
+
+  .brand {
+    gap: 8px;
+    letter-spacing: 0.1em;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .desktop-nav a {
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 12px;
+  }
+
+  .nav-cta {
+    gap: 5px;
+  }
+
+  .nav-phone {
+    padding-right: 4px;
+    padding-left: 4px;
+    font-size: 11px;
+  }
+
+  .nav-cta .btn {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
 @media (max-width: 768px) {
   :root {
     --glass-blur: 16px;
@@ -4064,8 +4178,25 @@ strong {
   }
 
   .brand {
+    min-width: 0;
     font-size: 13.5px;
     letter-spacing: 0.12em;
+  }
+
+  .brand > span:last-child {
+    white-space: nowrap;
+  }
+
+  .hero-actions,
+  .join-cta-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .btn,
+  .join-cta-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .brand-mark {
@@ -4415,6 +4546,12 @@ strong {
   .marketplace-layout { display: block; }.marketplace-sidebar { position: static; margin-bottom: 18px; }.market-filters-desktop { display: none; }
   .market-results-head { align-items: flex-start; }.market-results-head .btn { flex: 0 0 auto; }.products-grid, .featured-track { grid-template-columns: minmax(0, 1fr); }.product-card-media { height: 230px; }.featured-section { padding-top: 58px; }.featured-head { display: block; }.featured-sub { margin-top: 5px; }.cart-fab { right: 14px; bottom: 14px; }
   .marketplace-checkout-page { padding-top: 104px; }.checkout-form, .checkout-summary { padding: 21px; }.checkout-form-grid { grid-template-columns: minmax(0, 1fr); gap: 15px; }.checkout-full-span { grid-column: auto; }.checkout-empty-card { padding: 28px 20px; }
+
+  .navbar.is-hidden {
+    top: clamp(12px, 1.8vw, 24px);
+    opacity: 1;
+    pointer-events: auto;
+  }
   .product-detail-page { padding-top: 104px; }.product-gallery { min-height: 0; }.product-gallery-frame { min-height: 330px; }.product-detail-info { padding: 22px; }.product-detail-info h1 { font-size: clamp(36px, 12vw, 56px); }.product-detail-actions .btn-glass { flex: 1 1 120px; justify-content: center; }.related-section { padding-top: 56px; }.related-grid { grid-template-columns: minmax(0, 1fr); }
   .order-confirmation-page { padding-top: 104px; }.confirmation-card { padding: 24px 20px; }.confirmation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.order-progress { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 0; }.order-step-line { display: none; }
   .cart-drawer { top: 8px; right: 8px; bottom: 8px; width: calc(100vw - 16px); border-radius: 20px; }.cart-drawer-head { padding: 23px 19px 18px; }.cart-drawer-body { padding: 13px; }.cart-drawer-foot { padding: 13px 13px 16px; }
@@ -4471,6 +4608,19 @@ strong {
   .client-card:hover,
   .focus-card:hover {
     transform: none;
+  }
+}
+
+/* Keep the mobile navigation trigger visible whenever desktop links collapse. */
+@media (max-width: 1100px) {
+  .navbar .nav-cta .menu-button {
+    display: grid !important;
+    position: relative;
+    z-index: 3;
+    flex: 0 0 44px;
+    visibility: visible;
+    opacity: 1;
+    color: var(--ink-white);
   }
 }
 

@@ -42,6 +42,9 @@ export default function Hero() {
             <Button variant="primary" size="lg" href="#marketplace">
               Explore Leema
             </Button>
+            <Button variant="green" size="lg" href="/marketplace">
+              Marketplace
+            </Button>
             <Button variant="glass" size="lg" href="#join">
               Join the Community
             </Button>

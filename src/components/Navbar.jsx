@@ -153,6 +153,10 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.36, ease: EASE }}
               >
+                <a className="mobile-nav-phone" href={company.phoneHref}>
+                  <Phone size={15} aria-hidden="true" />
+                  <span>{company.phone}</span>
+                </a>
                 <button
                   type="button"
                   className="cart-fab-nav glass-base mobile-cart-fab"

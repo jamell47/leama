@@ -11,6 +11,9 @@ export default function JoinCTA() {
             <h2>Let’s build the next productive farm system.</h2>
           </div>
           <div className="join-cta-actions">
+            <Button variant="green" href="/marketplace">
+              Marketplace
+            </Button>
             <Button variant="primary" href={whatsappLink()}>
               Talk to Leema Tech
             </Button>

@@ -2,20 +2,21 @@ import { useState, useRef, useEffect } from 'react'
 import { MapPin, ChevronDown } from 'lucide-react'
 
 const LOCATIONS = [
-  'Nairobi, Kenya',
-  'Kisumu, Kenya',
-  'Mombasa, Kenya',
-  'Cape Town, South Africa',
-  'Lagos, Nigeria',
-  'Accra, Ghana',
-  'Madrid, Spain',
+  'All locations',
+  'Kajiado, Kenya',
+  'Kakamega, Kenya',
+  'Kericho, Kenya',
+  'Nakuru, Kenya',
+  'Marsabit, Kenya',
 ]
 
 /** Glass location picker pillow with a small pop-up list. */
 export default function LocationSelector({ value = 'Nairobi, Kenya', onChange }) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef(null)
-  const [current, setCurrent] = useState(value)
+  /* Fully controlled: the pill mirrors the parent's filter state, falling
+     back to "All locations" when no location filter is active (e.g. after a reset). */
+  const current = value || 'All locations'
 
   useEffect(() => {
     const onOutside = (e) => {
@@ -26,9 +27,9 @@ export default function LocationSelector({ value = 'Nairobi, Kenya', onChange })
   }, [])
 
   const select = (next) => {
-    setCurrent(next)
     setOpen(false)
-    onChange?.(next)
+    /* "All locations" clears the filter; a specific city applies it. */
+    onChange?.(next === 'All locations' ? '' : next)
   }
 
   return (

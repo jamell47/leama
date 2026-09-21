@@ -51,8 +51,10 @@ export const company = {
   whatsappNumber: '254757676006',
   coreBusiness: 'Agribusiness consultancy, farm infrastructure, training and farm management',
   overview:
-    'Leema Tech Farm Solutions is an agribusiness consultancy based in Nairobi, Kenya. We support farmers, investors and institutions with practical consultancy, farm infrastructure, training and farm management solutions. Our work connects good ideas to thoughtful planning, sound systems and the everyday realities of agriculture.',
-  tagline: 'Transforming agricultural ideas into profitable, sustainable enterprises.',
+    'Leema Tech Farm Solutions is a leading agribusiness consultancy and farm solutions company based in Nairobi, Kenya. Established in 2012 and formally registered in 2017, we provide integrated, practical and results-driven agricultural solutions to farmers, agribusiness investors, institutions and community projects across Kenya and the East African region.',
+  tagline: 'Transforming agricultural ideas into profitable, sustainable and well-managed farming enterprises.',
+  transformation:
+    'We specialize in transforming agricultural ideas into profitable, sustainable and well-managed farming enterprises through expert planning, modern technologies and hands-on implementation support.',
 }
 
 /* A prefilled, professional WhatsApp message used across the site. */
@@ -92,10 +94,10 @@ export const services = [
     alt: 'Irrigation infrastructure on a working farm',
     icon: 'Droplets',
     items: [
-      'Farm structures',
+      'Farm structures (stores, animal housing, staff houses)',
       'Tank towers and steel water tanks',
       'Borehole drilling and water systems',
-      'Irrigation system design and installation',
+      'Irrigation system design and installation (drip, sprinkler)',
       'Solar power and alternative energy solutions',
     ],
   },
@@ -113,7 +115,7 @@ export const services = [
       'Farm setup and operational planning',
       'Production scheduling and labour management',
       'Soil management and fertility programs',
-      'Crop health and pest management',
+      'Crop health and pest management strategies',
       'Livestock production planning',
     ],
   },
@@ -128,11 +130,10 @@ export const services = [
     alt: 'Agricultural training session with farmers',
     icon: 'GraduationCap',
     items: [
-      'Farmer training workshops',
-      'Practical agribusiness courses',
+      'Farmer training workshops and field days',
+      'Practical agribusiness courses and manuals',
       'School and institutional agriculture programs',
-      'Agri-tours',
-      'Demonstration farm visits',
+      'Agri-tours and demonstration farm visits',
     ],
   },
   {
@@ -146,12 +147,10 @@ export const services = [
     alt: 'Modern greenhouse with agricultural technology',
     icon: 'BookOpen',
     items: [
-      'eBooks',
-      'Farm management manuals',
-      'Online tutorials',
-      'Video training',
+      'eBooks and farm management manuals',
+      'Online tutorials and video training programs',
       'Digital farm planning tools',
-      'Customized learning materials',
+      'Customized learning materials for institutions',
     ],
   },
 ]
@@ -226,22 +225,22 @@ export const fruitVarieties = [
    --------------------------------------------------------------- */
 export const vision = {
   title: 'Vision',
-  text: 'To be a leading agribusiness consultancy in Kenya, driving sustainable agricultural development.',
+  text: 'To be a trusted leader in agribusiness solutions, empowering farmers and investors to build profitable, sustainable, and future-ready agricultural enterprises.',
   icon: 'Telescope',
 }
 
 export const mission = {
   title: 'Mission',
-  text: 'To empower farmers, investors and institutions with practical solutions that create lasting value.',
+  text: 'To provide professional, innovative, and practical farm management solutions that enhance productivity, profitability, and sustainability for our clients through consultancy, infrastructure development, training, and technology integration.',
   icon: 'Target',
 }
 
 export const coreValues = [
-  { title: 'Professionalism', icon: 'Award', text: 'Care, clarity and discipline in every engagement.' },
-  { title: 'Innovation', icon: 'Lightbulb', text: 'Useful ideas, tested in real field conditions.' },
-  { title: 'Sustainability', icon: 'Leaf', text: 'Systems designed to keep regenerating.' },
-  { title: 'Client Focus', icon: 'HeartHandshake', text: 'Your outcomes shape how we work.' },
-  { title: 'Excellence', icon: 'Sparkles', text: 'Standards that hold up long after handover.' },
+  { title: 'Professionalism', icon: 'Award', text: 'Delivering expert services with integrity and accountability.' },
+  { title: 'Innovation', icon: 'Lightbulb', text: 'Applying modern technologies and smart farming solutions.' },
+  { title: 'Sustainability', icon: 'Leaf', text: 'Promoting environmentally responsible farming practices.' },
+  { title: 'Client Focus', icon: 'HeartHandshake', text: 'Tailored solutions based on real farm needs.' },
+  { title: 'Excellence', icon: 'Sparkles', text: 'Commitment to quality, results, and continuous improvement.' },
 ]
 
 /* ---------------------------------------------------------------
@@ -466,7 +465,7 @@ export const navLinks = [
   { label: 'Services', to: '/services' },
   { label: 'Focus Areas', to: '/focus-areas' },
   { label: 'Why Us', to: '/why-us' },
-  { label: 'Marketplace', to: '/marketplace', icon: 'ShoppingCart' },
+  { label: 'Shop', to: '/marketplace', icon: 'ShoppingCart' },
   { label: 'Farmers', to: '/farmers' },
   { label: 'Contact', to: '/contact' },
 ]

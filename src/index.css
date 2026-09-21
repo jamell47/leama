@@ -2047,6 +2047,27 @@ strong {
   font-size: 12.5px;
 }
 
+.focus-varieties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.focus-varieties li {
+  padding: 5px 11px;
+  border: 1px solid rgba(141, 255, 112, 0.34);
+  border-radius: var(--radius-pill);
+  background: rgba(8, 40, 22, 0.5);
+  color: var(--green-light);
+  font-family: var(--font-accent);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
 .focus-cta {
   display: inline-flex;
   align-items: center;
@@ -3085,12 +3106,20 @@ strong {
 }
 
 .panel-highlights span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 7px 13px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.08);
-  color: var(--ink-muted);
+  color: var(--ink-soft);
   font-size: 11px;
+}
+
+.panel-highlights span svg {
+  flex: 0 0 auto;
+  color: var(--green-light);
 }
 /* ---------------------------------------------------------
    21 · CLIENT SEGMENTS
@@ -3252,6 +3281,24 @@ strong {
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(57, 255, 106, 0.34), rgba(11, 47, 26, 0.28));
   color: #ffffff;
+}
+
+.point-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.point-body strong {
+  color: var(--ink-white);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.point-body small {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .why-visual {

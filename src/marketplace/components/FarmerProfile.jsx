@@ -28,7 +28,18 @@ export default function FarmerProfile({ farmerId, compact = false }) {
         </div>
         {!compact && <p className="farmer-profile-bio">{farmer.bio}</p>}
       </div>
-      <button type="button" className="farmer-profile-cta glass-micro" aria-label={`Visit ${farmer.name}'s farm`}>
+      <button
+        type="button"
+        className="farmer-profile-cta glass-micro"
+        aria-label={`Visit ${farmer.name}'s farm`}
+        onClick={() => {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${farmer.name}, ${farmer.location}`)}`,
+            '_blank',
+            'noopener,noreferrer'
+          )
+        }}
+      >
         <ExternalLink size={13} />
       </button>
     </div>

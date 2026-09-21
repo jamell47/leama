@@ -1,24 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Leaf, TreePine, Egg, Users, Sparkles, Wheat } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { farmer } from '../assets'
+import { focusAreas } from '../data/content'
+import { getIcon } from '../icons'
 import { useReducedMotion } from '../hooks/useAnimations'
-import { crops, fruitFarm, poultry, farmer, greenhouse, solar, seedlings } from '../assets'
 import ImageWrap from './ImageWrap'
 import SectionHeading from './SectionHeading'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const focusAreas = [
-  { id: '01', title: 'Horticulture', image: crops, alt: 'Horticultural crop production', icon: Leaf },
-  { id: '02', title: 'Fruit Farming', subtitle: 'Avocado / Citrus / Mangoes / Apples', image: fruitFarm, alt: 'Fruit farming orchard', icon: TreePine },
-  { id: '03', title: 'Poultry', image: poultry, alt: 'Poultry farming systems', icon: Egg },
-  { id: '04', title: 'Livestock', image: farmer, alt: 'Livestock and mixed farming', icon: Wheat },
-  { id: '05', title: 'Mixed Farming', image: seedlings, alt: 'Integrated mixed farming model', icon: Leaf },
-  { id: '06', title: 'Community Agribusiness', image: greenhouse, alt: 'Community agribusiness project', icon: Users },
-  { id: '07', title: 'Sustainable Agriculture', image: solar, alt: 'Sustainable solar-powered agriculture', icon: Sparkles },
-]
 
 export default function FocusAreas() {
   const trackRef = useRef(null)
@@ -30,15 +22,19 @@ export default function FocusAreas() {
     const section = sectionRef.current
     if (!track || !section || reducedMotion || window.matchMedia('(max-width: 760px)').matches) return undefined
 
+    /* Measured on refresh: on very wide screens the five cards may already
+       fit, in which case there is nothing to scroll and no pin is created. */
+    const measure = () => Math.max(0, track.scrollWidth - section.clientWidth)
+    if (measure() <= 0) return undefined
+
     const context = gsap.context(() => {
-      const distance = Math.max(0, track.scrollWidth - section.clientWidth)
       gsap.fromTo(track, { x: 0 }, {
-        x: () => -distance,
+        x: () => -measure(),
         ease: 'none',
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: () => `+=${distance}`,
+          end: () => `+=${measure()}`,
           scrub: 1,
           pin: true,
           anticipatePin: 1,
@@ -62,15 +58,20 @@ export default function FocusAreas() {
       <div className="focus-track-wrapper" aria-label="Focus areas gallery">
         <div className="focus-track" ref={trackRef} role="list">
           {focusAreas.map((area, index) => {
-            const Icon = area.icon
+            const Icon = getIcon(area.icon)
             return (
               <motion.article key={area.id} className="focus-card" role="listitem" initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.65, delay: 0.06 * index }}>
                 <ImageWrap src={area.image} alt={area.alt} radius="lg" hoverZoom aspectRatio="3/4" loading={index < 3 ? 'eager' : 'lazy'} />
                 <div className="focus-overlay" aria-hidden="true" />
-                <div className="focus-tag"><span>{area.id}</span><Icon size={17} aria-hidden="true" /></div>
+                <div className="focus-tag"><span>{area.number}</span><Icon size={17} aria-hidden="true" /></div>
                 <div className="focus-content">
                   <h3>{area.title}</h3>
-                  {area.subtitle && <p>{area.subtitle}</p>}
+                  {area.sub && <p>{area.sub}</p>}
+                  {area.varieties && (
+                    <ul className="focus-varieties" role="list">
+                      {area.varieties.map((variety) => <li key={variety}>{variety}</li>)}
+                    </ul>
+                  )}
                   <span className="focus-cta">Explore area <ArrowUpRight size={16} aria-hidden="true" /></span>
                 </div>
               </motion.article>
@@ -78,7 +79,6 @@ export default function FocusAreas() {
           })}
         </div>
       </div>
-      <style>{`@keyframes focusPulse{0%,100%{opacity:.4;transform:scaleX(1)}50%{opacity:.9;transform:scaleX(1.4)}}`}</style>
       <div className="container focus-hint"><span className="focus-line" aria-hidden="true" /><span>Scroll to move through the landscape</span></div>
     </section>
   )

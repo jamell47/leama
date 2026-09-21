@@ -21,7 +21,7 @@ export default function OrderConfirmationPage() {
           <p className="eyebrow">Order status</p>
           <h2>No order found.</h2>
           <button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>
-            Return to marketplace
+            Return to shop
           </button>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import ProductCategories from '../components/ProductCategories'
 import Filters from '../components/Filters'
 import ProductGrid from '../components/ProductGrid'
@@ -59,8 +58,10 @@ export default function MarketplacePage() {
       <MarketplaceHero
         query={filters.query}
         activeCategory={filters.categoryId}
+        location={filters.location}
         onSearch={(query) => setFilters((current) => ({ ...current, query }))}
         onCategoryChange={(categoryId) => setFilters((current) => ({ ...current, categoryId }))}
+        onLocationChange={(location) => setFilters((current) => ({ ...current, location }))}
       />
 
       <section className="marketplace-catalogue container">

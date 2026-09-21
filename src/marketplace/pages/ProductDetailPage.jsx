@@ -38,6 +38,7 @@ export default function ProductDetailPage() {
   }, [id])
 
   const stock = useMemo(() => (product ? stockStatus(product) : { label: 'Available', ok: true }), [product])
+  const canAdd = product ? product.stock > 0 : false
 
   if (!product) {
     return (
@@ -46,7 +47,7 @@ export default function ProductDetailPage() {
           <p className="eyebrow">Product unavailable</p>
           <h2>We couldn’t find this product.</h2>
           <button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>
-            Back to marketplace
+            Back to shop
           </button>
         </div>
       </div>
@@ -57,7 +58,7 @@ export default function ProductDetailPage() {
     <div className="product-detail-page">
       <div className="container product-detail-shell">
         <button type="button" className="btn btn-glass product-back" onClick={() => navigate('/marketplace')}>
-          <ArrowLeft size={15} /> Back to marketplace
+          <ArrowLeft size={15} /> Back to shop
         </button>
 
         <div className="product-detail-layout">
@@ -104,10 +105,23 @@ export default function ProductDetailPage() {
 
             <div className="product-detail-actions">
               <QuantitySelector value={quantity} max={Math.min(product.stock || 1, 20)} onChange={setQuantity} />
-              <button type="button" className="btn btn-primary" onClick={() => addItem(product, quantity)}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => addItem(product, quantity)}
+                disabled={!canAdd}
+              >
                 <ShoppingCart size={14} /> Add to Cart
               </button>
-              <button type="button" className="btn btn-glass" onClick={() => addItem(product, quantity)}>
+              <button
+                type="button"
+                className="btn btn-glass"
+                onClick={() => {
+                  addItem(product, quantity)
+                  navigate('/marketplace/checkout')
+                }}
+                disabled={!canAdd}
+              >
                 Buy Now
               </button>
             </div>

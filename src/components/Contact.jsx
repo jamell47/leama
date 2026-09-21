@@ -62,11 +62,16 @@ export default function Contact() {
               <span><strong>Call us</strong><small>+254 757 676 006</small></span>
               <ArrowUpRight size={17} aria-hidden="true" />
             </a>
-            <div className="info-item">
+            <a
+              className="info-item"
+              href="https://www.google.com/maps/search/?api=1&query=Leema+Tech+Farm+Solutions+Nairobi+Kenya"
+              target="_blank"
+              rel="noreferrer"
+            >
               <span className="info-icon"><MapPin size={20} aria-hidden="true" /></span>
               <span><strong>Visit us</strong><small>Nairobi, Fedha / Embakasi, Kenya</small></span>
               <ArrowUpRight size={17} aria-hidden="true" />
-            </div>
+            </a>
             <div className="info-item">
               <span className="info-icon"><Clock size={20} aria-hidden="true" /></span>
               <span><strong>Response time</strong><small>We respond within 24 hours</small></span>

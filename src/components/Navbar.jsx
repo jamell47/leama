@@ -10,11 +10,22 @@ import MagneticButton from './MagneticButton'
 
 const EASE = [0.22, 1, 0.36, 1]
 
+/* Home-page section each primary nav link scrolls to. */
+const SECTION_IDS = {
+  '/': 'home',
+  '/about': 'about',
+  '/services': 'services',
+  '/focus-areas': 'focus',
+  '/why-us': 'why',
+  '/farmers': 'clients',
+  '/contact': 'contact',
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [open, setOpen] = useState(false)
-  const pathname = window.location.pathname
+  const [activePath, setActivePath] = useState(window.location.pathname)
   const reducedMotion = useReducedMotion()
   const { totalItems, total, currency, openCart } = useCart()
 
@@ -32,10 +43,6 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    setOpen(false)
-  }, [pathname])
-
-  useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
@@ -44,18 +51,43 @@ export default function Navbar() {
 
   const toggle = useCallback(() => setOpen((value) => !value), [])
 
+  /* Smooth-scroll to a home-page section; shared by nav links and CTAs. */
+  const scrollToSection = useCallback((sectionId) => {
+    if (!sectionId) return
+    if (sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
+      return
+    }
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })
+  }, [reducedMotion])
+
+  /* "Get in Touch" — release the mobile veil first, then glide to #contact. */
+  const handleGetInTouch = useCallback((event) => {
+    event.preventDefault()
+    setOpen(false)
+    window.setTimeout(() => scrollToSection('contact'), reducedMotion ? 0 : 80)
+  }, [reducedMotion, scrollToSection])
+
   const NavLink = ({ to, children, className: classNameProp }) => {
-    const isActive = pathname === to || pathname.startsWith(to + '/')
+    const isActive = activePath === to || activePath.startsWith(to + '/')
+    const isMarketplace = to.startsWith('/marketplace')
+    const sectionId = SECTION_IDS[to]
     return (
       <a
-        href={to}
+        href={isMarketplace ? to : `#${sectionId}`}
         className={cn(isActive ? 'active' : '', classNameProp)}
         onClick={(e) => {
-          if (to.startsWith('/marketplace')) {
+          if (isMarketplace) {
             e.preventDefault()
             window.location.pathname = to
             window.dispatchEvent(new PopStateEvent('popstate'))
+            return
           }
+          e.preventDefault()
+          setOpen(false)
+          setActivePath(to)
+          scrollToSection(sectionId)
+          history.pushState(null, '', to === '/' ? '/' : `/#${sectionId}`)
         }}
       >
         {children}
@@ -104,7 +136,7 @@ export default function Navbar() {
             <span className="cart-fab-nav-count">{totalItems}</span>
             <span className="cart-fab-nav-total">{formatCurrency(total, currency)}</span>
           </button>
-          <MagneticButton to="/contact" variant="primary" size="sm" magnetic={!reducedMotion}>
+          <MagneticButton href="#contact" variant="primary" size="sm" magnetic={!reducedMotion} onClick={handleGetInTouch}>
             Get in Touch
           </MagneticButton>
           <button type="button" className="menu-button" onClick={toggle} aria-expanded={open} aria-label={open ? 'Close menu' : 'Open menu'}>
@@ -170,7 +202,7 @@ export default function Navbar() {
                   <ShoppingCart size={16} aria-hidden="true" />
                   <span>Cart · {totalItems} items · {formatCurrency(total, currency)}</span>
                 </button>
-                <MagneticButton to="/contact" variant="primary" magnetic={false}>
+                <MagneticButton href="#contact" variant="primary" magnetic={false} onClick={handleGetInTouch}>
                   Get in Touch
                 </MagneticButton>
                 <a className="btn btn-glass mobile-nav-cta" href={whatsappLink()} target="_blank" rel="noreferrer">

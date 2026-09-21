@@ -5,9 +5,9 @@ export default function Marketplace() {
     <section className="marketplace-section" id="marketplace">
       <div className="container">
         <SectionHeading
-          eyebrow="04 / Marketplace"
+          eyebrow="04 / Shop"
           lines={['A stronger link', 'between farms and buyers']}
-          copy="The marketplace layer connects farm output with the right demand, helping agricultural businesses reach better, more transparent market channels."
+          copy="Our shop connects farm output with the right demand, helping agricultural businesses reach better, more transparent market channels."
         />
       </div>
     </section>

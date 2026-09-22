@@ -10,7 +10,10 @@ export default function ProductCategories({ active = 'all', categories = [], onC
     if (!track) return
     track.scrollBy({ left: direction * Math.max(track.clientWidth * 0.6, 320), behavior: 'smooth' })
   }
-  const allCategories = [{ id: 'all', name: 'All produce', description: '' }, ...categories]
+  const allCategories = [
+    { id: 'all', name: 'All produce', description: '' },
+    ...categories.filter((category) => category.id !== 'all'),
+  ]
 
   return (
     <div className="categories-rail">

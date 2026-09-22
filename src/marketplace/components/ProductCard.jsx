@@ -36,6 +36,7 @@ export default function ProductCard({ product }) {
     setError('')
     try {
       await addItem(product, qty)
+      navigate('/marketplace/checkout')
     } catch (requestError) {
       setError(requestError?.message || 'Unable to add this product. Please try again.')
     } finally {

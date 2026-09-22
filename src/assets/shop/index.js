@@ -31,6 +31,7 @@ import farm25 from './farm25.PNG.jpg' // cabbage field
 import farm26 from './farm26.PNG.jpg' // piglets suckling a sow
 
 export const shop = {
+  default: farm25, // cabbage — generic fallback for products without a local match
   layerHouse: farm1,
   chickenCoop: farm2,
   freeRangeFlock: farm3,

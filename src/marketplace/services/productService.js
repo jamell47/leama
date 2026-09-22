@@ -1,16 +1,47 @@
 import { productService as api } from './api.js'
+import { API_BASE } from '../../env.js'
+import { PRODUCTS } from '../data/products.js'
+import { CATEGORIES } from '../data/categories.js'
+import { shop } from '../../assets/shop'
 
 function asNumber(value, fallback = 0) {
   const number = Number(value)
   return Number.isFinite(number) ? number : fallback
 }
 
+function localProductForName(name) {
+  const normalizedName = String(name || '').toLowerCase()
+  return PRODUCTS.find((product) => {
+    const localName = product.name.toLowerCase()
+    return normalizedName === localName || normalizedName.includes(localName) || localName.includes(normalizedName)
+  })
+}
+
+function resolveImageUrl(value) {
+  if (!value || /^https?:\/\//i.test(value) || value.startsWith('data:') || value.startsWith('blob:')) return value || ''
+  if (value.startsWith('/api/')) return new URL(value, API_BASE).toString()
+  return value
+}
+
+// All unique shop images available for use as gallery fallback
+const allShopImages = [...new Set(Object.values(shop || {}).filter(Boolean))]
+
 export function normalizeProduct(product) {
   if (!product) return null
   const category = typeof product.category === 'object' ? product.category : null
-  const image = product.image || product.imageUrl || ''
-  const galleryValue = product.gallery || []
-  const gallery = Array.isArray(galleryValue) && galleryValue.length ? galleryValue : image ? [image] : []
+  const localProduct = localProductForName(product.name)
+  // Prefer local shop images (Vite imports) so the shop page always
+  // displays an image even when the backend has no uploaded file yet.
+  const image = localProduct?.image || shop?.default || resolveImageUrl(product.image || product.imageUrl)
+  // Build gallery: local product gallery > backend gallery > all shop images
+  const galleryValue = localProduct?.gallery?.length
+    ? localProduct.gallery
+    : (product.gallery && product.gallery.length
+        ? product.gallery.map(resolveImageUrl)
+        : allShopImages)
+  const gallery = Array.isArray(galleryValue) && galleryValue.length
+    ? galleryValue.map(resolveImageUrl)
+    : (image ? [image] : [])
   return {
     ...product,
     id: product.id || product.productId,
@@ -19,7 +50,7 @@ export function normalizeProduct(product) {
     price: asNumber(product.price),
     unit: product.unit || 'piece',
     image,
-    gallery,
+    gallery: gallery.map(resolveImageUrl),
     stock: asNumber(product.stock ?? product.availableStock),
     isAvailable: product.isAvailable !== false,
     categoryId: product.categoryId || category?.id || '',
@@ -69,11 +100,19 @@ export function applyFilters(products, filters = {}) {
 }
 
 export async function fetchProducts(filters = {}) {
-  const response = await api.fetchProducts(filters)
-  const products = response?.products || response?.items || response || []
-  return {
-    products: products.map(normalizeProduct),
-    pagination: response?.pagination || { page: 1, limit: products.length, total: products.length, totalPages: 1 },
+  try {
+    const response = await api.fetchProducts(filters)
+    const products = response?.products || response?.items || response || []
+    return {
+      products: products.map(normalizeProduct),
+      pagination: response?.pagination || { page: 1, limit: products.length, total: products.length, totalPages: 1 },
+    }
+  } catch {
+    const products = applyFilters(PRODUCTS.map(normalizeProduct), filters)
+    return {
+      products,
+      pagination: { page: 1, limit: products.length, total: products.length, totalPages: 1 },
+    }
   }
 }
 
@@ -83,7 +122,11 @@ export async function fetchProduct(id) {
 }
 
 export async function fetchCategories() {
-  return api.fetchCategories()
+  try {
+    return await api.fetchCategories()
+  } catch {
+    return CATEGORIES
+  }
 }
 
 export async function fetchFeatured(limit = 6) {

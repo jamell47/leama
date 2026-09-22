@@ -30,6 +30,7 @@ export default function OrderConfirmationPage() {
       let nextOrder = await getOrderByNumber(id).catch(() => null)
       if (!nextOrder) nextOrder = await getOrder(id)
       setOrder(nextOrder)
+      setPayment(nextOrder?.payment || null)
       setError('')
       return nextOrder
     } catch (requestError) {
@@ -39,8 +40,40 @@ export default function OrderConfirmationPage() {
   }
 
   useEffect(() => {
-    if (!order && id) setOrder(getOrder(id))
-  }, [id, location.key, order])
+    let active = true
+    setLoading(true)
+    loadOrder().finally(() => {
+      if (active) setLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (!order || Date.now() - startedAt.current >= POLL_TIMEOUT) return undefined
+    const timer = window.setTimeout(async () => {
+      const nextOrder = await loadOrder()
+      if (nextOrder?.status === ORDER_STATUS.PAYMENT_PENDING) startedAt.current = Date.now()
+    }, POLL_INTERVAL)
+    return () => window.clearTimeout(timer)
+  }, [order])
+
+  const state = paymentStatus(payment, order)
+  const orderNumber = order?.orderNumber || id
+  const amount = Number(order?.totalAmount || 0)
+  const isFinal = state === 'success' || state === 'failed' || state === 'cancelled'
+
+  if (loading && !order) {
+    return (
+      <div className="container checkout-empty">
+        <div className="glass-panel checkout-empty-card">
+          <p className="eyebrow">Order status</p>
+          <h2>Loading your order...</h2>
+        </div>
+      </div>
+    )
+  }
 
   if (!order) {
     return (

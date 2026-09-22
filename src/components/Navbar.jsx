@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Leaf, Menu, Phone, ShoppingCart, X } from 'lucide-react'
+import { Leaf, Menu, Phone, ShoppingCart, ShieldCheck, X } from 'lucide-react'
 import { company, navLinks, whatsappLink } from '../data/content'
 import { useCart } from '../marketplace/context/CartContext'
 import { formatCurrency } from '../utils'
@@ -107,6 +107,14 @@ export default function Navbar() {
           <MagneticButton to="/contact" variant="primary" size="sm" magnetic={!reducedMotion}>
             Get in Touch
           </MagneticButton>
+          <a
+            href="/admin/login"
+            className="btn btn-glass btn-sm admin-login-nav"
+            aria-label="Admin sign in"
+          >
+            <ShieldCheck size={14} aria-hidden="true" />
+            Admin Login
+          </a>
           <button type="button" className="menu-button" onClick={toggle} aria-expanded={open} aria-label={open ? 'Close menu' : 'Open menu'}>
             {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
@@ -173,6 +181,10 @@ export default function Navbar() {
                 <MagneticButton to="/contact" variant="primary" magnetic={false}>
                   Get in Touch
                 </MagneticButton>
+                <a className="btn btn-glass mobile-nav-cta" href="/admin/login" aria-label="Admin sign in">
+                  <ShieldCheck size={14} aria-hidden="true" />
+                  Admin Login
+                </a>
                 <a className="btn btn-glass mobile-nav-cta" href={whatsappLink()} target="_blank" rel="noreferrer">
                   WhatsApp Us
                 </a>

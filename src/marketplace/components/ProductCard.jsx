@@ -1,26 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, ShoppingCart } from 'lucide-react'
 import { cn, formatCurrency, stockStatus } from '../utils'
 import { useCart } from '../context/CartContext'
-import { farmerLabel } from '../data/products'
 import { isFavorited, toggleFavorite, loadFavorites } from '../services/favoritesService'
 import RatingStars from './RatingStars'
 import ProductBadge from './ProductBadge'
 import QuantitySelector from './QuantitySelector'
 
-/**
- * Premium glassmorphism product card.
- *
- * Image zoom + 3D lift on hover, favourite toggle, organic/featured badges,
- * farmer attribution, rating, price, stock, inline quantity and add-to-cart.
- * Clicking the card body navigates to the product detail page.
- */
 export default function ProductCard({ product }) {
   const navigate = useNavigate()
-  const { addItem } = useCart()
+  const { addItem, pending } = useCart()
   const [qty, setQty] = useState(1)
-  const [faves, setFaves] = useState(loadFavorites())
+  const [faves, setFaves] = useState(loadFavorites)
+  const [adding, setAdding] = useState(false)
+  const [error, setError] = useState('')
+  const [imageFailed, setImageFailed] = useState(false)
 
   useEffect(() => {
     const handler = () => setFaves(loadFavorites())
@@ -29,19 +24,30 @@ export default function ProductCard({ product }) {
   }, [])
 
   const fav = isFavorited(faves, product.id)
-  const onFave = (e) => {
-    e.stopPropagation()
+  const onFave = (event) => {
+    event.stopPropagation()
     setFaves(toggleFavorite(product.id))
     window.dispatchEvent(new Event('leema:fave:change'))
   }
-  const onAdd = (e) => {
-    e.stopPropagation()
-    if (product.stock <= 0) return
-    addItem(product, qty)
+  const onAdd = async (event) => {
+    event.stopPropagation()
+    if (adding || pending || product.stock <= 0) return
+    setAdding(true)
+    setError('')
+    try {
+      await addItem(product, qty)
+    } catch (requestError) {
+      setError(requestError?.message || 'Unable to add this product. Please try again.')
+    } finally {
+      setAdding(false)
+    }
   }
-  const farmer = product.farmerId ? farmerLabel(product.farmerId) : null
+
   const stock = stockStatus(product)
-  const canAdd = product.stock > 0
+  const canAdd = product.isAvailable !== false && product.stock > 0
+  const maxQuantity = Math.max(1, Math.min(product.stock || 1, 20))
+  const farmerName = product.farmerName || product.farmer?.name
+  const farmerLocation = product.farmer?.location || product.location
 
   return (
     <article
@@ -50,18 +56,25 @@ export default function ProductCard({ product }) {
       onClick={() => navigate(`/marketplace/product/${product.id}`)}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/marketplace/product/${product.id}`)}
+      onKeyDown={(event) => (event.key === 'Enter' || event.key === ' ') && navigate(`/marketplace/product/${product.id}`)}
       aria-label={`View ${product.name}`}
     >
       <div className="product-card-media">
-        <img
-          src={product.image}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          draggable="false"
-          className="product-card-img"
-        />
+        {product.image && !imageFailed ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+            className="product-card-img"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <div className="product-card-image-fallback" aria-label={`${product.name} image unavailable`}>
+            <span>{product.name.charAt(0)}</span>
+          </div>
+        )}
         <div className="product-card-media-overlay" aria-hidden="true" />
         <div className="product-card-badges">
           {product.organic && <ProductBadge type="organic" />}
@@ -81,11 +94,10 @@ export default function ProductCard({ product }) {
         <h3 className="product-card-name">{product.name}</h3>
         <p className="product-card-desc">{product.description}</p>
 
-        {farmer && (
+        {farmerName && (
           <div className="product-card-farmer">
-            <img src={farmer.avatar} alt="" className="farmer-avatar" loading="lazy" decoding="async" />
             <span>
-              From <b>{farmer.name}</b> · {farmer.location}
+              From <b>{farmerName}</b>{farmerLocation ? ` · ${farmerLocation}` : ''}
             </span>
           </div>
         )}
@@ -103,16 +115,17 @@ export default function ProductCard({ product }) {
         </div>
 
         <div className="product-card-actions">
-          <QuantitySelector value={qty} max={Math.min(product.stock || 1, 20)} onChange={setQty} />
+          <QuantitySelector value={qty} max={maxQuantity} onChange={setQty} />
           <button
             type="button"
             className="btn btn-primary btn-sm product-add-btn"
             onClick={onAdd}
-            disabled={!canAdd}
+            disabled={!canAdd || adding || pending}
           >
-            <ShoppingCart size={14} /> Add to Cart
+            <ShoppingCart size={14} /> {adding ? 'Adding...' : 'Add to Cart'}
           </button>
         </div>
+        {error && <p className="product-card-error" role="alert">{error}</p>}
       </div>
     </article>
   )

@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import ProductCategories from '../components/ProductCategories'
 import Filters from '../components/Filters'
 import ProductGrid from '../components/ProductGrid'
 import FeaturedSection from '../components/FeaturedSection'
 import CartButton from '../components/CartButton'
 import MarketplaceHero from '../components/MarketplaceHero'
-import { fetchFeatured, fetchNew, fetchPopular, fetchProducts } from '../services/productService'
+import { fetchCategories, fetchProducts } from '../services/productService'
 
 const DEFAULT_FILTERS = {
   categoryId: 'all',
@@ -22,30 +21,32 @@ const DEFAULT_FILTERS = {
 
 export default function MarketplacePage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
+  const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
-  const [featured, setFeatured] = useState([])
-  const [popular, setPopular] = useState([])
-  const [newArrivals, setNewArrivals] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let active = true
     const load = async () => {
       setLoading(true)
-      const [catalog, featuredList, popularList, newList] = await Promise.all([
-        fetchProducts(filters),
-        fetchFeatured(),
-        fetchPopular(),
-        fetchNew(),
-      ])
-      if (!active) return
-      setProducts(catalog)
-      setFeatured(featuredList)
-      setPopular(popularList)
-      setNewArrivals(newList)
-      setLoading(false)
+      setError('')
+      try {
+        const [catalog, categoryList] = await Promise.all([
+          fetchProducts(filters),
+          fetchCategories(),
+        ])
+        if (!active) return
+        const catalogProducts = catalog?.products || catalog || []
+        setProducts(catalogProducts)
+        setCategories(Array.isArray(categoryList) ? categoryList : categoryList?.categories || [])
+      } catch (requestError) {
+        if (!active) return
+        setError(requestError?.message || 'Unable to load the marketplace. Please try again.')
+      } finally {
+        if (active) setLoading(false)
+      }
     }
-
     load()
     return () => {
       active = false
@@ -53,21 +54,27 @@ export default function MarketplacePage() {
   }, [filters])
 
   const filteredProducts = useMemo(() => products, [products])
+  const featured = useMemo(() => products.filter((product) => product.featured).slice(0, 4), [products])
+  const popular = useMemo(() => [...products].sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0)).slice(0, 4), [products])
+  const newArrivals = useMemo(() => products.slice(0, 4), [products])
+
+  const updateFilter = (next) => setFilters((current) => ({ ...current, ...next }))
 
   return (
     <div className="marketplace-page">
       <MarketplaceHero
         query={filters.query}
         activeCategory={filters.categoryId}
-        onSearch={(query) => setFilters((current) => ({ ...current, query }))}
-        onCategoryChange={(categoryId) => setFilters((current) => ({ ...current, categoryId }))}
+        onSearch={(query) => updateFilter({ query })}
+        onCategoryChange={(categoryId) => updateFilter({ categoryId })}
       />
 
       <section className="marketplace-catalogue container">
         <div className="marketplace-toolbar-row">
           <ProductCategories
             active={filters.categoryId}
-            onChange={(categoryId) => setFilters((current) => ({ ...current, categoryId }))}
+            categories={categories}
+            onChange={(categoryId) => updateFilter({ categoryId })}
           />
         </div>
 
@@ -76,7 +83,8 @@ export default function MarketplacePage() {
             <Filters
               compact
               value={filters}
-              onChange={(next) => setFilters((current) => ({ ...current, ...next }))}
+              categories={categories}
+              onChange={updateFilter}
               onReset={() => setFilters(DEFAULT_FILTERS)}
             />
           </aside>
@@ -85,20 +93,16 @@ export default function MarketplacePage() {
             <div className="market-results-head">
               <div>
                 <p className="eyebrow">Fresh produce</p>
-                <h2>{loading ? 'Loading harvests...' : `${filteredProducts.length} products available`}</h2>
+                <h2>{loading ? 'Loading harvests...' : error ? 'Marketplace unavailable' : `${filteredProducts.length} products available`}</h2>
               </div>
-              <button
-                type="button"
-                className="btn btn-glass btn-sm"
-                onClick={() => setFilters(DEFAULT_FILTERS)}
-              >
-                Reset filters
-              </button>
+              <button type="button" className="btn btn-glass btn-sm" onClick={() => setFilters(DEFAULT_FILTERS)}>Reset filters</button>
             </div>
 
             <ProductGrid
               products={filteredProducts}
               layout="catalogue"
+              loading={loading}
+              error={error}
               emptyTitle="No farm produce found"
               emptyCaption="Try searching for another product or category."
             />
@@ -106,26 +110,13 @@ export default function MarketplacePage() {
         </div>
       </section>
 
-      <FeaturedSection
-        id="fresh-from-farm"
-        title="Fresh From the Farm"
-        subtitle="Premium produce chosen for quality and traceability."
-        products={featured}
-      />
-
-      <FeaturedSection
-        id="popular-this-week"
-        title="Popular This Week"
-        subtitle="The best-selling choices from our community of growers."
-        products={popular}
-      />
-
-      <FeaturedSection
-        id="new-from-farmers"
-        title="New From Farmers"
-        subtitle="Fresh arrivals from farmer partners across the region."
-        products={newArrivals}
-      />
+      {!error && (
+        <>
+          <FeaturedSection id="fresh-from-farm" title="Fresh From the Farm" subtitle="Premium produce chosen for quality and traceability." products={featured} />
+          <FeaturedSection id="popular-this-week" title="Popular This Week" subtitle="The most-loved choices from our community of growers." products={popular} />
+          <FeaturedSection id="new-from-farmers" title="New From Farmers" subtitle="Fresh arrivals from farmer partners across the region." products={newArrivals} />
+        </>
+      )}
 
       <CartButton />
     </div>

@@ -65,8 +65,8 @@ export default function MarketplacePage() {
       <MarketplaceHero
         query={filters.query}
         activeCategory={filters.categoryId}
-        onSearch={(query) => updateFilter({ query })}
-        onCategoryChange={(categoryId) => updateFilter({ categoryId })}
+        onSearch={(query) => setFilters((current) => ({ ...current, query }))}
+        onCategoryChange={(categoryId) => setFilters((current) => ({ ...current, categoryId }))}
       />
 
       <section className="marketplace-catalogue container">

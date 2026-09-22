@@ -39,47 +39,22 @@ export default function OrderConfirmationPage() {
   }
 
   useEffect(() => {
-    let active = true
-    let poll
-    const load = async () => {
-      setLoading(true)
-      const nextOrder = await loadOrder()
-      if (!active || !nextOrder) {
-        setLoading(false)
-        return
-      }
-      if (active) setPayment(nextOrder.payment || null)
-      setLoading(false)
-    }
-    load()
-    poll = window.setInterval(async () => {
-      if (Date.now() - startedAt.current > POLL_TIMEOUT) {
-        window.clearInterval(poll)
-        if (active) setError('Payment confirmation is taking longer than expected. Refresh this page to check again.')
-        return
-      }
-      const nextOrder = await loadOrder()
-      if (!nextOrder) return
-      if (active) setPayment(nextOrder.payment || null)
-    }, POLL_INTERVAL)
-    return () => {
-      active = false
-      window.clearInterval(poll)
-    }
-  }, [id])
+    if (!order && id) setOrder(getOrder(id))
+  }, [id, location.key, order])
 
-  if (loading) {
-    return <div className="container checkout-empty"><div className="glass-panel checkout-empty-card"><LoaderCircle className="button-spinner" size={24} /><p className="eyebrow">Order status</p><h2>Checking your M-Pesa payment...</h2><p className="confirmation-status-copy">Waiting for Safaricom to confirm the transaction.</p></div></div>
+  if (!order) {
+    return (
+      <div className="container checkout-empty">
+        <div className="glass-panel checkout-empty-card">
+          <p className="eyebrow">Order status</p>
+          <h2>No order found.</h2>
+          <button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>
+            Return to marketplace
+          </button>
+        </div>
+      </div>
+    )
   }
-  if (error && !order) {
-    return <div className="container checkout-empty"><div className="glass-panel checkout-empty-card"><XCircle size={28} /><p className="eyebrow">Order status</p><h2>Unable to load order</h2><p className="confirmation-status-copy">{error}</p><button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>Return to marketplace</button></div></div>
-  }
-  if (!order) return null
-
-  const state = paymentStatus(payment, order)
-  const isFinal = state === 'success' || state === 'failed' || state === 'cancelled'
-  const amount = Number(order.totalAmount ?? order.total ?? 0)
-  const orderNumber = order.orderNumber || order.number || id
 
   return (
     <div className="order-confirmation-page">

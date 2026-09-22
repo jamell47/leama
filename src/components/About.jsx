@@ -1,19 +1,13 @@
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Award, Leaf, Target, Sun, Users } from 'lucide-react'
+import { Leaf } from 'lucide-react'
 import { farmWebp, farmer, crops, greenhouse, soil, infrastructure } from '../assets'
+import { company, vision, mission, coreValues } from '../data/content'
+import { getIcon } from '../icons'
 import { useReducedMotion } from '../hooks/useAnimations'
 import Glass from '../Glass'
 import ImageWrap from './ImageWrap'
 import SectionHeading from './SectionHeading'
 import Button from './Button'
-
-const values = [
-  { icon: Award, title: 'Professionalism', desc: 'Care and clarity in every engagement' },
-  { icon: Sun, title: 'Innovation', desc: 'Useful ideas, tested in the field' },
-  { icon: Leaf, title: 'Sustainability', desc: 'Systems designed to regenerate' },
-  { icon: Target, title: 'Client Focus', desc: 'Your outcomes shape our work' },
-  { icon: Users, title: 'Excellence', desc: 'Standards that endure beyond handover' },
-]
 
 const floatingImages = [
   { src: farmer, alt: 'Farmer inspecting crops in a greenhouse', className: 'float-img-1', ratio: '4/5' },
@@ -22,6 +16,9 @@ const floatingImages = [
   { src: soil, alt: 'Soil and crop planning', className: 'float-img-4', ratio: '4/3' },
   { src: infrastructure, alt: 'Farm infrastructure and water systems', className: 'float-img-5', ratio: '3/4' },
 ]
+
+/* Vision / Mission / Core Values — documented wording from the company profile. */
+const principles = [vision, mission]
 
 export default function About() {
   const reducedMotion = useReducedMotion()
@@ -41,10 +38,11 @@ export default function About() {
 
         <motion.div className="about-content" initial={{ opacity: 0, x: 42 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
           <Glass variant="strong" blur={28} className="about-panel">
-            <SectionHeading eyebrow="01 / The Leema approach" delay={0.08}>
-              <>We don&apos;t just farm.<br /><em>We build agricultural enterprises.</em></>
+            <SectionHeading eyebrow="01 / About Leema Tech" delay={0.08}>
+              <>We don't just farm.<br /><em>We build agricultural enterprises.</em></>
             </SectionHeading>
-            <p>Leema Tech Farm Solutions is an agribusiness consultancy based in Nairobi, Kenya. We support farmers, investors and institutions with practical consultancy, farm infrastructure, training and farm management solutions. Our work connects good ideas to thoughtful planning, sound systems and the everyday realities of agriculture.</p>
+            <p>{company.overview}</p>
+            <p>{company.transformation}</p>
             <div className="about-highlights">
               {['Practical, locally adapted solutions', 'Strong expertise in farming and infrastructure', 'Professional documentation and planning support', 'Commitment to client success and long-term partnerships'].map((point, index) => (
                 <motion.div key={point} className="highlight-item" initial={{ opacity: 0, x: -18 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.28 + index * 0.07 }}>
@@ -62,12 +60,8 @@ export default function About() {
           <>Built on good<br /><em>principles.</em></>
         </SectionHeading>
         <div className="principles-grid">
-          {[
-            { title: 'Vision', text: 'To be a leading agribusiness consultancy in Kenya, driving sustainable agricultural development.', icon: Target },
-            { title: 'Mission', text: 'To empower farmers, investors and institutions with practical solutions that create lasting value.', icon: ArrowUpRight },
-            { title: 'Core Values', text: 'Professionalism, innovation, sustainability, client focus and excellence.', icon: Award },
-          ].map((item, index) => {
-            const Icon = item.icon
+          {principles.map((item, index) => {
+            const Icon = getIcon(item.icon)
             return (
               <motion.article key={item.title} className="principle-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.65, delay: 0.08 * index }}>
                 <Glass variant="white" hover hoverLift hoverGlow className="principle-glass">
@@ -79,17 +73,25 @@ export default function About() {
               </motion.article>
             )
           })}
+          <motion.article className="principle-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.65, delay: 0.16 }}>
+            <Glass variant="white" hover hoverLift hoverGlow className="principle-glass">
+              <span className="principle-number">03</span>
+              <span className="principle-icon"><Leaf size={23} aria-hidden="true" /></span>
+              <h3>Core Values</h3>
+              <p>Professionalism, innovation, sustainability, client focus and excellence — the standards behind every engagement.</p>
+            </Glass>
+          </motion.article>
         </div>
 
         <div className="values-grid">
-          {values.map((value, index) => {
-            const Icon = value.icon
+          {coreValues.map((value, index) => {
+            const Icon = getIcon(value.icon)
             return (
               <motion.div key={value.title} className="value-card" initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.06 * index }}>
                 <Glass variant="green" hover hoverLift className="value-glass">
                   <span className="value-icon"><Icon size={20} aria-hidden="true" /></span>
                   <h4>{value.title}</h4>
-                  <p>{value.desc}</p>
+                  <p>{value.text}</p>
                 </Glass>
               </motion.div>
             )

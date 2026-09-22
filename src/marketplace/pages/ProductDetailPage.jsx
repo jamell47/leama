@@ -49,31 +49,16 @@ export default function ProductDetailPage() {
   }, [id])
 
   const stock = useMemo(() => (product ? stockStatus(product) : { label: 'Available', ok: true }), [product])
-  const maxQuantity = Math.max(1, Math.min(product?.stock || 1, 20))
-  const canAdd = product && product.isAvailable !== false && product.stock > 0 && !adding && !pending
 
-  const add = async () => {
-    if (!canAdd) return
-    setAdding(true)
-    try {
-      await addItem(product, quantity)
-    } catch (requestError) {
-      setError(requestError?.message || 'Unable to add this product. Please try again.')
-    } finally {
-      setAdding(false)
-    }
-  }
-
-  if (loading) {
-    return <div className="container product-detail-empty"><div className="glass-panel product-detail-empty-card"><div className="market-empty-illustration market-empty-illustration--loading" aria-hidden="true" /><p className="eyebrow">Loading product</p><h2>Finding this harvest...</h2></div></div>
-  }
-  if (error || !product) {
+  if (!product) {
     return (
       <div className="container product-detail-empty">
         <div className="glass-panel product-detail-empty-card">
           <p className="eyebrow">Product unavailable</p>
-          <h2>{error || 'We couldn’t find this product.'}</h2>
-          <button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>Back to marketplace</button>
+          <h2>We couldn’t find this product.</h2>
+          <button type="button" className="btn btn-primary" onClick={() => navigate('/marketplace')}>
+            Back to marketplace
+          </button>
         </div>
       </div>
     )
@@ -82,7 +67,10 @@ export default function ProductDetailPage() {
   return (
     <div className="product-detail-page">
       <div className="container product-detail-shell">
-        <button type="button" className="btn btn-glass product-back" onClick={() => navigate('/marketplace')}><ArrowLeft size={15} /> Back to marketplace</button>
+        <button type="button" className="btn btn-glass product-back" onClick={() => navigate('/marketplace')}>
+          <ArrowLeft size={15} /> Back to marketplace
+        </button>
+
         <div className="product-detail-layout">
           <ProductGallery product={product} />
           <motion.div className="product-detail-info glass-panel" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
@@ -106,9 +94,13 @@ export default function ProductDetailPage() {
               <div className="product-detail-meta-item"><CheckCircle2 size={15} /><span>{product.delivery ? 'Delivery available' : 'Pickup only'}</span></div>
             </div>
             <div className="product-detail-actions">
-              <QuantitySelector value={quantity} max={maxQuantity} onChange={setQuantity} />
-              <button type="button" className="btn btn-primary" onClick={add} disabled={!canAdd}><ShoppingCart size={14} /> {adding ? 'Adding...' : 'Add to Cart'}</button>
-              <button type="button" className="btn btn-glass" onClick={async () => { await add(); navigate('/marketplace/checkout') }} disabled={!canAdd}>Buy Now</button>
+              <QuantitySelector value={quantity} max={Math.min(product.stock || 1, 20)} onChange={setQuantity} />
+              <button type="button" className="btn btn-primary" onClick={() => addItem(product, quantity)}>
+                <ShoppingCart size={14} /> Add to Cart
+              </button>
+              <button type="button" className="btn btn-glass" onClick={() => addItem(product, quantity)}>
+                Buy Now
+              </button>
             </div>
             {error && <p className="product-detail-error" role="alert">{error}</p>}
             <FarmerProfile farmerName={product.farmerName} location={product.location} rating={product.rating} bio={product.farmerBio} verified={product.farmerVerified} />

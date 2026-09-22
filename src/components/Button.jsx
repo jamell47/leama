@@ -14,6 +14,11 @@ export default function Button({
   href,
   type = 'button',
   disabled = false,
+  /* Presentational-only props consumed by richer button primitives;
+     stripped here so they never leak into the DOM. */
+  icon: _icon,
+  magnetic: _magnetic,
+  external: _external,
   ...props
 }) {
   const isLink = Boolean(href)

@@ -12,7 +12,7 @@ export default function JoinCTA() {
           </div>
           <div className="join-cta-actions">
             <Button variant="green" href="/marketplace">
-              Marketplace
+              Shop
             </Button>
             <Button variant="primary" href={whatsappLink()}>
               Talk to Leema Tech

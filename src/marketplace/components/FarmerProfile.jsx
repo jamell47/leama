@@ -14,6 +14,9 @@ export default function FarmerProfile({ farmerName, location, rating = 0, bio = 
         {Number(rating) > 0 && <div className="farmer-profile-rating"><Star size={13} fill="currentColor" /><span>{Number(rating).toFixed(1)}</span></div>}
         {!compact && bio && <p className="farmer-profile-bio">{bio}</p>}
       </div>
+      <button type="button" className="farmer-profile-cta glass-micro" aria-label={`Visit ${farmer.name}'s farm`}>
+        <ExternalLink size={13} />
+      </button>
     </div>
   )
 }

@@ -10,7 +10,7 @@ const EASE = [0.22, 1, 0.36, 1]
 /**
  * Marketplace hero — floats over the farm world in layered glass.
  */
-export default function MarketplaceHero({ query, onSearch, activeCategory, onCategoryChange }) {
+export default function MarketplaceHero({ query, onSearch, location, onLocationChange }) {
     const { items, total, currency, openCart } = useCart()
 
   return (
@@ -59,7 +59,7 @@ export default function MarketplaceHero({ query, onSearch, activeCategory, onCat
             className="market-search--lg"
             placeholder="Search fruits, vegetables, grains, dairy..."
           />
-          <LocationSelector />
+          <LocationSelector value={location} onChange={onLocationChange} />
           <button
             type="button"
             className="mp-hero-cart glass-base"

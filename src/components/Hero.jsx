@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion'
 import { Leaf, HardHat, ClipboardCheck, GraduationCap, ChevronDown } from 'lucide-react'
 import { useInView } from '../hooks/useAnimations'
-import { farmWebp, sunset } from '../assets'
 import { company, heroStats, heroCapabilities } from '../data/content'
-import ImageWrap from './ImageWrap'
+import { getIcon } from '../icons'
 import Glass from '../Glass'
 import Button from './Button'
 
 export default function Hero() {
-  const [heroRef, isInView] = useInView(0.15, '-100px')
+  const [heroRef] = useInView(0.15, '-100px')
   const [hudRef, hudInView] = useInView(0.1)
 
   return (
@@ -25,7 +24,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.12 }}
           >
             <span className="eyebrow-dot" aria-hidden="true" />
-            Nairobi, Kenya <span className="eyebrow-separator" aria-hidden="true" /> Agricultural Enterprise Platform
+            Nairobi, Kenya <span className="eyebrow-separator" aria-hidden="true" /> Established {company.established} · Registered {company.registered}
           </motion.span>
 
           <motion.h1 id="hero-title" initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}>
@@ -39,11 +38,11 @@ export default function Hero() {
           </motion.p>
 
           <motion.div className="hero-actions" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.52 }}>
-            <Button variant="primary" size="lg" href="#marketplace">
+            <Button variant="primary" size="lg" href="#about">
               Explore Leema
             </Button>
             <Button variant="green" size="lg" href="/marketplace">
-              Marketplace
+              Shop
             </Button>
             <Button variant="glass" size="lg" href="#join">
               Join the Community
@@ -61,58 +60,55 @@ export default function Hero() {
           <Glass variant="strong" className="hero-dashboard">
             <div className="dashboard-head">
               <div>
-                <span>LIVE MARKET</span>
-                <strong>Leema Marketplace</strong>
+                <span>COMPANY PROFILE</span>
+                <strong>{company.name}</strong>
               </div>
-              <div className="dashboard-live"><i aria-hidden="true" /><span>Active</span></div>
+              <div className="dashboard-live"><i aria-hidden="true" /><span>Since {company.established}</span></div>
             </div>
 
             <div className="dashboard-stats">
+              {heroStats.map((stat) => (
+                <Glass key={stat.label} variant="soft" className="dashboard-stat">
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </Glass>
+              ))}
               <Glass variant="soft" className="dashboard-stat">
-                <strong>12,500+</strong>
-                <span>Farmers</span>
-              </Glass>
-              <Glass variant="soft" className="dashboard-stat">
-                <strong>48,000+</strong>
-                <span>Tonnes Produced</span>
-              </Glass>
-              <Glass variant="soft" className="dashboard-stat">
-                <strong>120+</strong>
-                <span>Market Categories</span>
-              </Glass>
-              <Glass variant="soft" className="dashboard-stat">
-                <strong>47</strong>
-                <span>Counties</span>
+                <strong>10+</strong>
+                <span>Years Experience</span>
               </Glass>
             </div>
 
             <div className="dashboard-rows">
               <div className="dashboard-row">
-                <span><b>Top</b> Avocado, Citrus, Maize</span>
-                <span><b>Trending</b> +24% this month</span>
+                <span><b>Based</b> Nairobi, Kenya</span>
+                <span><b>Region</b> Kenya & East Africa</span>
               </div>
               <div className="dashboard-row">
-                <span><b>Fresh</b> 2,340 listings</span>
-                <span><b>Verified</b> 89% sellers</span>
+                <span><b>Serves</b> Farmers, investors & institutions</span>
+                <span><b>Focus</b> Sustainable agribusiness</span>
               </div>
             </div>
 
             <div className="dashboard-foot">
-              <span>Data updates every 6 hours</span>
+              <span>{company.coreBusiness}</span>
             </div>
           </Glass>
         </motion.div>
 
         <motion.div className="hero-capabilities" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-          {heroCapabilities.map((cap, index) => (
-            <Glass key={cap.title} variant="soft" className="capability" whileHover={{ y: -4 }}>
-              <div className="capability-icon"><cap.icon size={20} aria-hidden="true" /></div>
-              <div>
-                <strong>{cap.title}</strong>
-                <small>{cap.desc}</small>
-              </div>
-            </Glass>
-          ))}
+          {heroCapabilities.map((cap) => {
+            const Icon = getIcon(cap.icon)
+            return (
+              <Glass key={cap.title} variant="soft" className="capability" whileHover={{ y: -4 }}>
+                <div className="capability-icon"><Icon size={20} aria-hidden="true" /></div>
+                <div>
+                  <strong>{cap.title}</strong>
+                  <small>{cap.desc}</small>
+                </div>
+              </Glass>
+            )
+          })}
         </motion.div>
 
         <motion.a className="hero-scroll" href="#features" aria-label="Scroll to features">
@@ -124,22 +120,22 @@ export default function Hero() {
       <motion.div className="hero-hud" ref={hudRef} initial={{ opacity: 0 }} animate={{ opacity: hudInView ? 1 : 0 }} transition={{ duration: 0.9, delay: 0.4 }}>
         <Glass className="hud-chip hud-1 floating-animation" style={{ animationDelay: '0s' }} variant="soft">
           <div className="hud-icon"><Leaf size={18} aria-hidden="true" /></div>
-          <div><strong>12,500+</strong><span>Farmers</span></div>
+          <div><strong>{company.established}</strong><span>Established</span></div>
         </Glass>
 
         <Glass className="hud-chip hud-2 floating-animation" style={{ animationDelay: '1.2s' }} variant="soft">
           <div className="hud-icon"><HardHat size={18} aria-hidden="true" /></div>
-          <div><strong>48,000+</strong><span>Tonnes</span></div>
+          <div><strong>{company.registered}</strong><span>Registered</span></div>
         </Glass>
 
         <Glass className="hud-chip hud-3 floating-animation" style={{ animationDelay: '2.4s' }} variant="soft">
           <div className="hud-icon"><ClipboardCheck size={18} aria-hidden="true" /></div>
-          <div><strong>120+</strong><span>Categories</span></div>
+          <div><strong>Nairobi</strong><span>Kenya</span></div>
         </Glass>
 
         <Glass className="hud-chip hud-4 floating-animation" style={{ animationDelay: '3.6s' }} variant="soft">
           <div className="hud-icon"><GraduationCap size={18} aria-hidden="true" /></div>
-          <div><strong>47</strong><span>Counties</span></div>
+          <div><strong>10+</strong><span>Years Experience</span></div>
         </Glass>
       </motion.div>
     </section>

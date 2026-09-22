@@ -1,14 +1,15 @@
 /**
  * Farmer profiles — the human face behind every product.
  * In production these come from /api/farmers; the sample set here keeps
- * the marketplace feeling real without hard-coding everything around it.
+ * the shop feeling real without hard-coding everything around it.
  */
-import { farmer, community, seedlings, poultry } from '../../assets'
+import { shop } from '../../assets/shop'
 
-const farmerPortrait1 = farmer
-const farmerPortrait2 = community
-const farmerPortrait3 = seedlings
-const farmerPortrait4 = poultry
+const farmerPortrait1 = shop.potatoes
+const farmerPortrait2 = shop.freeRangeFlock
+const farmerPortrait3 = shop.greenhouseTomatoes
+const farmerPortrait4 = shop.dairyHerd
+const farmerPortrait5 = shop.piggery
 
 /**
  * @typedef {Object} Farmer
@@ -29,12 +30,12 @@ const FARMERS = {
   james: {
     id: 'farmer_james',
     name: 'James Njoroge',
-    location: 'Kiambu, Kenya',
+    location: 'Kericho, Kenya',
     country: 'Kenya',
-    region: 'Central',
+    region: 'Rift Valley',
     avatar: farmerPortrait1,
-    bio: 'Third-generation horticulturist growing premium Hass avocados and specialty citrus.',
-    specialities: ['Avocados', 'Citrus', 'Mangoes'],
+    bio: 'Third-generation vegetable grower supplying potatoes, cabbage and root crops to local markets.',
+    specialities: ['Potatoes', 'Cabbage', 'Root Crops'],
     verified: true,
     rating: 4.9,
     farmSize: 12,
@@ -45,9 +46,9 @@ const FARMERS = {
     location: 'Kakamega, Kenya',
     country: 'Kenya',
     region: 'Western',
-    avatar: farmerPortrait2,
-    bio: 'Organic vegetable farmer supplying leafy greens and root crops to Nairobi markets.',
-    specialities: ['Spinach', 'Kale', 'Carrots', 'Tomatoes'],
+    avatar: farmerPortrait3,
+    bio: 'Poultry and greenhouse producer raising broilers, layers and vine-ripened tomatoes.',
+    specialities: ['Chicken', 'Eggs', 'Tomatoes'],
     verified: true,
     rating: 4.8,
     farmSize: 8,
@@ -55,12 +56,12 @@ const FARMERS = {
   roberto: {
     id: 'farmer_roberto',
     name: 'Roberto Mwangi',
-    location: 'Limpopo, South Africa',
-    country: 'South Africa',
-    region: 'Limpopo',
-    avatar: farmerPortrait3,
-    bio: 'Specialty coffee and macadamia grower at the foot of the Drakensberg range.',
-    specialities: ['Coffee', 'Macadamia', 'Avocados'],
+    location: 'Nakuru, Kenya',
+    country: 'Kenya',
+    region: 'Rift Valley',
+    avatar: farmerPortrait5,
+    bio: 'Livestock farmer running a modern piggery and rabbit unit alongside field crops.',
+    specialities: ['Pork', 'Rabbit', 'Piglets'],
     verified: true,
     rating: 4.95,
     farmSize: 45,
@@ -68,12 +69,12 @@ const FARMERS = {
   mariam: {
     id: 'farmer_mariam',
     name: 'Mariam Ali',
-    location: 'Marsabit, Kenya',
+    location: 'Kajiado, Kenya',
     country: 'Kenya',
-    region: 'Northern',
+    region: 'Rift Valley',
     avatar: farmerPortrait4,
     bio: 'Dairy and free-range egg producer focused on regenerative pasture rotation.',
-    specialities: ['Milk', 'Eggs', 'Goat Meat'],
+    specialities: ['Milk', 'Eggs', 'Layers'],
     verified: true,
     rating: 4.7,
     farmSize: 20,
@@ -81,12 +82,12 @@ const FARMERS = {
   kofi: {
     id: 'farmer_kofi',
     name: 'Kofi Boateng',
-    location: 'Ashanti Region, Ghana',
-    country: 'Ghana',
-    region: 'Ashanti',
-    avatar: farmerPortrait1,
-    bio: 'Cassava, plantain and cocoa farmer working with local cooperatives.',
-    specialities: ['Cocoa', 'Plantains', 'Cassava'],
+    location: 'Nakuru, Kenya',
+    country: 'Kenya',
+    region: 'Rift Valley',
+    avatar: farmerPortrait2,
+    bio: 'Mixed livestock farmer supplying pork, rabbit and farm-fresh chicken to the shop.',
+    specialities: ['Pork', 'Rabbit', 'Chicken'],
     verified: true,
     rating: 4.85,
     farmSize: 30,

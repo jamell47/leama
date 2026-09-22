@@ -1,16 +1,18 @@
 import { motion } from 'framer-motion'
-import { Leaf, Target, Award, Shield, Star } from 'lucide-react'
 import { farmWebp, farmer, crops, infrastructure } from '../assets'
+import { whyPoints } from '../data/content'
+import { getIcon } from '../icons'
 import { useCounter } from '../hooks/useAnimations'
 import Glass from '../Glass'
 import SectionHeading from './SectionHeading'
 
-const whyPoints = [
-  { icon: Leaf, text: 'Over a decade of hands-on agribusiness experience' },
-  { icon: Target, text: 'Practical, locally adapted solutions for Kenyan conditions' },
-  { icon: Award, text: 'Strong expertise in farming and infrastructure engineering' },
-  { icon: Shield, text: 'Professional documentation and planning support' },
-  { icon: Star, text: 'Commitment to client success and long-term partnerships' },
+/* Faithful short explanations of each documented reason. */
+const details = [
+  'Established in 2012 and registered in 2017, with more than a decade of practical field work.',
+  'Solutions adapted to Kenyan conditions, soils, water and markets.',
+  'A rare combination of agronomic know-how and engineering delivery.',
+  'Clear plans, budgets and documentation that stand up to scrutiny.',
+  'We stay involved as the enterprise grows and succeeds.',
 ]
 
 export default function WhyLeemaTech() {
@@ -26,11 +28,14 @@ export default function WhyLeemaTech() {
           </SectionHeading>
           <div className="why-points" role="list">
             {whyPoints.map((point, index) => {
-              const Icon = point.icon
+              const Icon = getIcon(point.icon)
               return (
                 <motion.div key={point.text} className="why-point" role="listitem" initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 + index * 0.07 }}>
                   <span className="point-icon"><Icon size={19} aria-hidden="true" /></span>
-                  <span>{point.text}</span>
+                  <span className="point-body">
+                    <strong>{point.text}</strong>
+                    {details[index] && <small>{details[index]}</small>}
+                  </span>
                 </motion.div>
               )
             })}

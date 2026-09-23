@@ -1,5 +1,4 @@
 import { productService as api } from './api.js'
-import { API_BASE } from '../../env.js'
 import { PRODUCTS } from '../data/products.js'
 import { CATEGORIES } from '../data/categories.js'
 import { shop } from '../../assets/shop'
@@ -17,31 +16,62 @@ function localProductForName(name) {
   })
 }
 
-function resolveImageUrl(value) {
-  if (!value || /^https?:\/\//i.test(value) || value.startsWith('data:') || value.startsWith('blob:')) return value || ''
-  if (value.startsWith('/api/')) return new URL(value, API_BASE).toString()
-  return value
+// Every farm photo shipped in src/assets/shop (farm1 … farm26).
+const allShopImages = [...new Set(Object.values(shop || {}).filter(Boolean))]
+
+/**
+ * Keyword → farm photo, so every card in the shop dashboard shows the
+ * picture that actually matches the product (never an old/backend image).
+ */
+const SHOP_IMAGE_RULES = [
+  [/egg/i, shop.eggs],
+  [/milk|dairy|yoghurt|yogurt|cheese/i, shop.dairyCow],
+  [/broil|chicken|poultry|layer|hen/i, shop.broilers],
+  [/pig|pork|bacon/i, shop.piggery],
+  [/rabbit/i, shop.rabbitsHutch],
+  [/watermelon|melon/i, shop.watermelons],
+  [/potato/i, shop.potatoes],
+  [/onion/i, shop.onions],
+  [/tomato/i, shop.greenhouseTomatoes],
+  [/cabbage|sukuma|kale|spinach/i, shop.cabbage],
+]
+
+function hashIndex(key, modulo) {
+  const text = String(key || '')
+  let hash = 0
+  for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) >>> 0
+  return modulo > 0 ? hash % modulo : 0
 }
 
-// All unique shop images available for use as gallery fallback
-const allShopImages = [...new Set(Object.values(shop || {}).filter(Boolean))]
+/** Farm photo for a product: keyword match → stable rotation through the
+ *  shop set, so all 26 photos get used across the catalogue. */
+function shopImageFor(product, localProduct) {
+  if (localProduct?.image) return localProduct.image
+  const haystack = [product?.name, product?.subcategory, product?.categoryName].filter(Boolean).join(' ')
+  const matched = SHOP_IMAGE_RULES.find(([pattern]) => pattern.test(haystack))
+  if (matched?.[1]) return matched[1]
+  if (!allShopImages.length) return ''
+  return allShopImages[hashIndex(product?.id || product?.name, allShopImages.length)]
+}
+
+/** Gallery built only from farm photos: the product's own image plus the
+ *  nearest photos after it in the assets/shop set. */
+function shopGalleryFor(image) {
+  if (!allShopImages.length) return image ? [image] : []
+  const start = Math.max(0, allShopImages.indexOf(image))
+  return Array.from({ length: Math.min(4, allShopImages.length) }, (_, i) => allShopImages[(start + i) % allShopImages.length])
+}
 
 export function normalizeProduct(product) {
   if (!product) return null
   const category = typeof product.category === 'object' ? product.category : null
   const localProduct = localProductForName(product.name)
-  // Prefer local shop images (Vite imports) so the shop page always
-  // displays an image even when the backend has no uploaded file yet.
-  const image = localProduct?.image || shop?.default || resolveImageUrl(product.image || product.imageUrl)
-  // Build gallery: local product gallery > backend gallery > all shop images
-  const galleryValue = localProduct?.gallery?.length
+  // Always show the project's own farm photography (src/assets/shop) —
+  // earlier/backend images are never used on the shop dashboard.
+  const image = shopImageFor(product, localProduct) || shop?.default || ''
+  const gallery = Array.isArray(localProduct?.gallery) && localProduct.gallery.length
     ? localProduct.gallery
-    : (product.gallery && product.gallery.length
-        ? product.gallery.map(resolveImageUrl)
-        : allShopImages)
-  const gallery = Array.isArray(galleryValue) && galleryValue.length
-    ? galleryValue.map(resolveImageUrl)
-    : (image ? [image] : [])
+    : shopGalleryFor(image)
   return {
     ...product,
     id: product.id || product.productId,
@@ -50,7 +80,6 @@ export function normalizeProduct(product) {
     price: asNumber(product.price),
     unit: product.unit || 'piece',
     image,
-    gallery: gallery.map(resolveImageUrl),
     stock: asNumber(product.stock ?? product.availableStock),
     isAvailable: product.isAvailable !== false,
     categoryId: product.categoryId || category?.id || '',
@@ -66,6 +95,7 @@ export function normalizeProduct(product) {
     location: product.location || product.farmer?.location || '',
     country: product.country || product.farmer?.country || '',
     tags: Array.isArray(product.tags) ? product.tags : [],
+    gallery,
   }
 }
 
